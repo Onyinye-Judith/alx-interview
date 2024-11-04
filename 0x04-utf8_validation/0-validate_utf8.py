@@ -1,50 +1,42 @@
 #!/usr/bin/python3
-"""
-This module contains a function that validates UTF-8 encoding.
-"""
 
-def validUTF8(data):
-    """
-    Determines if a given data set represents a valid UTF-8 encoding.
+ef valid_utf8(data: list[int]) -> bool:
+        """
+            Validate UTF-8 encoding.
 
-                Parameters:
-                    data (List[int]): A list of integers representing bytes of data.
+             Arg: 
+             data: List of integers representing bytes of data.
 
-                        Returns:
-                            bool: True if data is a valid UTF-8 encoding, else False.
-                                """
-                                    # Number of continuation bytes needed
-                                        num_bytes = 0
+             Returns:
+                     True if data is valid UTF-8 encoding, False otherwise.
+                         """
+                         bytes_left = 0
 
-                                            # Masks for leading bits in different byte patterns
-                                                byte1_mask = 0b10000000  # 128, to check leading 1 or 0
-                                                    byte2_mask = 0b11000000  # 192, to check '10' in continuation bytes
-                                                        byte3_mask = 0b11100000
-                                                            byte4_mask = 0b11110000
-                                                                byte5_mask = 0b11111000
+                             for byte in data:
+                                         # Convert byte to binary and remove '0b' prefix
+                                                 binary = bin(byte)[2:].zfill(8)
 
-                                                                    for byte in data:
-                                                                                # Mask the byte to keep only the least significant 8 bits
-                                                                                        byte = byte & 0xFF
+                                                         # Check for single-byte sequence (ASCII)
+                                                                 if bytes_left == 0 and binary[0] == '0':
+                                                                                 continue
 
-                                                                                                if num_bytes == 0:
-                                                                                                                # Determine the number of bytes in the UTF-8 character
-                                                                                                                            if (byte & byte1_mask) == 0:
-                                                                                                                                                continue  # 1-byte character
-                                                                                                                                                        elif (byte & byte3_mask) == 0b11000000:
-                                                                                                                                                                            num_bytes = 1  # 2-byte character
-                                                                                                                                                                                        elif (byte & byte4_mask) == 0b11100000:
-                                                                                                                                                                                                            num_bytes = 2  # 3-byte character
-                                                                                                                                                                                                                        elif (byte & byte5_mask) == 0b11110000:
-                                                                                                                                                                                                                                            num_bytes = 3  # 4-byte character
-                                                                                                                                                                                                                                                        else:
-                                                                                                                                                                                                                                                                            return False  # Invalid leading byte
-                                                                                                                                                                                                                                                                                else:
-                                                                                                                                                                                                                                                                                                # Check if byte is a continuation byte (starts with '10')
-                                                                                                                                                                                                                                                                                                            if (byte & byte2_mask) != 0b10000000:
-                                                                                                                                                                                                                                                                                                                                return False
-                                                                                                                                                                                                                                                                                                                                        num_bytes -= 1
+                                                                                     # Check for start of multi-byte sequence
+                                                                                             if bytes_left == 0:
+                                                                                                             # Determine number of bytes in sequence
+                                                                                                                         if binary.startswith('110'):
+                                                                                                                                             bytes_left = 1
+                                                                                                                                                         elif binary.startswith('1110'):
+                                                                                                                                                                             bytes_left = 2
+                                                                                                                                                                                         elif binary.startswith('11110'):
+                                                                                                                                                                                                             bytes_left = 3
+                                                                                                                                                                                                                         else:
+                                                                                                                                                                                                                                             return False  # Invalid start byte
 
-                                                                                                                                                                                                                                                                                                                                            # All bytes should be accounted for
-                                                                                                                                                                                                                                                                                                                                                return num_bytes == 0
+                                                                                                                                                                                                                                                 # Validate continuation bytes
+                                                                                                                                                                                                                                                         else:
+                                                                                                                                                                                                                                                                         if not binary.startswith('10'):
+                                                                                                                                                                                                                                                                                             return False  # Invalid continuation byte
+                                                                                                                                                                                                                                                                                                     bytes_left -= 1
 
+                                                                                                                                                                                                                                                                                                         # Check if there are remaining bytes left to process
+                                                                                                                                                                                                                                                                                                             return bytes_left == 0
