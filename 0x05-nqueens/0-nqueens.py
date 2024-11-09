@@ -1,78 +1,68 @@
 #!/usr/bin/python3
 """
-This script solves the N queens problem.
-The N queens puzzle is the challenge of placing N
-non-attacking queens on an N×N chessboard
+Solution to the nqueens problem
 """
-
 import sys
 
 
-def main():
+def backtrack(r, n, cols, pos, neg, board):
         """
-            Validates the input and calls the backtracking function.
+            backtrack function to find solution
                 """
-                    if len(sys.argv) != 2:
-                                print("Usage: nqueens N")
-                                        sys.exit(1)
+                    if r == n:
+                                res = []
+                                        for l in range(len(board)):
+                                                        for k in range(len(board[l])):
+                                                                            if board[l][k] == 1:
+                                                                                                    res.append([l, k])
+                                                                                                            print(res)
+                                                                                                                    return
 
-                                            try:
-                                                        N = int(sys.argv[1])
-                                                                if N < 4:
-                                                                                print("N must be at least 4")
-                                                                                            sys.exit(1)
-                                                                                                except ValueError:
-                                                                                                            print("N must be a number")
-                                                                                                                    sys.exit(1)
+                                                                                                                    for c in range(n):
+                                                                                                                                if c in cols or (r + c) in pos or (r - c) in neg:
+                                                                                                                                                continue
 
-                                                                                                                        # Now that N is valid, call the backtracker
-                                                                                                                            backtracker(N)
+                                                                                                                                                    cols.add(c)
+                                                                                                                                                            pos.add(r + c)
+                                                                                                                                                                    neg.add(r - c)
+                                                                                                                                                                            board[r][c] = 1
 
+                                                                                                                                                                                    backtrack(r+1, n, cols, pos, neg, board)
 
-                                                                                                                            def backtracker(N: int):
-                                                                                                                                    """
-                                                                                                                                        Solves the N queens problem using backtracking.
-                                                                                                                                            Prints all possible solutions.
-                                                                                                                                                """
-                                                                                                                                                    # Set of columns where queens are placed
-                                                                                                                                                        columns = set()
-                                                                                                                                                            # Set of diagonals
-                                                                                                                                                                main_diag = set()
-                                                                                                                                                                    anti_diag = set()
-                                                                                                                                                                        board = [-1] * N
-
-                                                                                                                                                                            def solve(row: int):
-                                                                                                                                                                                        if row == N:
-                                                                                                                                                                                                        print_solution(board)
-                                                                                                                                                                                                                    return
-
-                                                                                                                                                                                                                        for col in range(N):
-                                                                                                                                                                                                                                        # Check if placing queen is safe
-                                                                                                                                                                                                                                                    if col in columns or (row - col) in main_diag or \
-                                                                                                                                                                                                                                                                          (row + col) in anti_diag:
-                                                                                                                                                                                                                                                                                              continue
-
-                                                                                                                                                                                                                                                                                                      # Place queen
-                                                                                                                                                                                                                                                                                                                  board[row] = col
-                                                                                                                                                                                                                                                                                                                              columns.add(col)
-                                                                                                                                                                                                                                                                                                                                          main_diag.add(row - col)
-                                                                                                                                                                                                                                                                                                                                                      anti_diag.add(row + col)
-
-                                                                                                                                                                                                                                                                                                                                                                  # Recurse to place queens in next row
-                                                                                                                                                                                                                                                                                                                                                                              solve(row + 1)
-
-                                                                                                                                                                                                                                                                                                                                                                                          # Backtrack: remove queen and undo attacks
-                                                                                                                                                                                                                                                                                                                                                                                                      columns.remove(col)
-                                                                                                                                                                                                                                                                                                                                                                                                                  main_diag.remove(row - col)
-                                                                                                                                                                                                                                                                                                                                                                                                                              anti_diag.remove(row + col)
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                  def print_solution(board):
-                                                                                                                                                                                                                                                                                                                                                                                                                                              """Print the board as a solution."""
-                                                                                                                                                                                                                                                                                                                                                                                                                                                      solution = [[row, board[row]] for row in range(N)]
-                                                                                                                                                                                                                                                                                                                                                                                                                                                              print(solution)
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                  # Start solving from the first row
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                      solve(0)
+                                                                                                                                                                                            cols.remove(c)
+                                                                                                                                                                                                    pos.remove(r + c)
+                                                                                                                                                                                                            neg.remove(r - c)
+                                                                                                                                                                                                                    board[r][c] = 0
 
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                      main()
+                                                                                                                                                                                                                    def nqueens(n):
+                                                                                                                                                                                                                            """
+                                                                                                                                                                                                                                Solution to nqueens problem
+                                                                                                                                                                                                                                    Args:
+                                                                                                                                                                                                                                            n (int): number of queens. Must be >= 4
+                                                                                                                                                                                                                                                Return:
+                                                                                                                                                                                                                                                        List of lists representing coordinates of each
+                                                                                                                                                                                                                                                                queen for all possible solutions
+                                                                                                                                                                                                                                                                    """
+                                                                                                                                                                                                                                                                        cols = set()
+                                                                                                                                                                                                                                                                            pos_diag = set()
+                                                                                                                                                                                                                                                                                neg_diag = set()
+                                                                                                                                                                                                                                                                                    board = [[0] * n for i in range(n)]
+
+                                                                                                                                                                                                                                                                                        backtrack(0, n, cols, pos_diag, neg_diag, board)
+
+
+                                                                                                                                                                                                                                                                                        if __name__ == "__main__":
+                                                                                                                                                                                                                                                                                                n = sys.argv
+                                                                                                                                                                                                                                                                                                    if len(n) != 2:
+                                                                                                                                                                                                                                                                                                                print("Usage: nqueens N")
+                                                                                                                                                                                                                                                                                                                        sys.exit(1)
+                                                                                                                                                                                                                                                                                                                            try:
+                                                                                                                                                                                                                                                                                                                                        nn = int(n[1])
+                                                                                                                                                                                                                                                                                                                                                if nn < 4:
+                                                                                                                                                                                                                                                                                                                                                                print("N must be at least 4")
+                                                                                                                                                                                                                                                                                                                                                                            sys.exit(1)
+                                                                                                                                                                                                                                                                                                                                                                                    nqueens(nn)
+                                                                                                                                                                                                                                                                                                                                                                                        except ValueError:
+                                                                                                                                                                                                                                                                                                                                                                                                    print("N must be a number")
+                                                                                                                                                                                                                                                                                                                                                                                                            sys.exit(1)
