@@ -1,25 +1,23 @@
 #!/usr/bin/python3
-""" Making changes """
+"""
+Interview Question on: fewest number of coins needed to
+meet a given amount total
+"""
 
 
 def makeChange(coins, total):
-        """ Generate changes needed to reach total
-
-            Args:
-                    coins ([List]): [List of Coins available]
-                            total ([int]): [total amount needed]
-                                """
-                                    if total <= 0:
-                                                return 0
-                                                check = 0
-                                                    temp = 0
-                                                        coins.sort(reverse=True)
-                                                            for i in coins:
-                                                                        while check < total:
-                                                                                        check += i
-                                                                                                    temp += 1
-                                                                                                            if check == total:
-                                                                                                                            return temp
-                                                                                                                                check -= i
-                                                                                                                                        temp -= 1
-                                                                                                                                            return -1
+        """ fewest number of coins needed to meet total """
+            if total <= 0:
+                        return 0
+                        # sort the coins in descending order
+                            coins.sort(reverse=True)
+                                change = 0
+                                    for coin in coins:
+                                                if total <= 0:
+                                                                break
+                                                                    temp = total // coin
+                                                                            change += temp
+                                                                                    total -= (temp * coin)
+                                                                                        if total != 0:
+                                                                                                    return -1
+                                                                                                    return change
