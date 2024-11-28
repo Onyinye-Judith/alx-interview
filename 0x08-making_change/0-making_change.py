@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 def makeChange(coins, total):
         min_coins = [total + 1] * (total + 1)
             min_coins[0] = 0
