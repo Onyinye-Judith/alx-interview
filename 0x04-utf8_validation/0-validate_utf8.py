@@ -1,42 +1,32 @@
 #!/usr/bin/python3
+"""UTF-8 Validation"""
 
-ef valid_utf8(data: list[int]) -> bool:
-        """
-            Validate UTF-8 encoding.
 
-             Arg: 
-             data: List of integers representing bytes of data.
+def get_leading_set_bits(num):
+    """returns the number of leading set bits (1)"""
+    set_bits = 0
+    helper = 1 << 7
+    while helper & num:
+        set_bits += 1
+        helper = helper >> 1
+    return set_bits
 
-             Returns:
-                     True if data is valid UTF-8 encoding, False otherwise.
-                         """
-                         bytes_left = 0
 
-                             for byte in data:
-                                         # Convert byte to binary and remove '0b' prefix
-                                                 binary = bin(byte)[2:].zfill(8)
-
-                                                         # Check for single-byte sequence (ASCII)
-                                                                 if bytes_left == 0 and binary[0] == '0':
-                                                                                 continue
-
-                                                                                     # Check for start of multi-byte sequence
-                                                                                             if bytes_left == 0:
-                                                                                                             # Determine number of bytes in sequence
-                                                                                                                         if binary.startswith('110'):
-                                                                                                                                             bytes_left = 1
-                                                                                                                                                         elif binary.startswith('1110'):
-                                                                                                                                                                             bytes_left = 2
-                                                                                                                                                                                         elif binary.startswith('11110'):
-                                                                                                                                                                                                             bytes_left = 3
-                                                                                                                                                                                                                         else:
-                                                                                                                                                                                                                                             return False  # Invalid start byte
-
-                                                                                                                                                                                                                                                 # Validate continuation bytes
-                                                                                                                                                                                                                                                         else:
-                                                                                                                                                                                                                                                                         if not binary.startswith('10'):
-                                                                                                                                                                                                                                                                                             return False  # Invalid continuation byte
-                                                                                                                                                                                                                                                                                                     bytes_left -= 1
-
-                                                                                                                                                                                                                                                                                                         # Check if there are remaining bytes left to process
-                                                                                                                                                                                                                                                                                                             return bytes_left == 0
+def validUTF8(data):
+    """determines if a given data set represents a valid UTF-8 encoding"""
+    bits_count = 0
+    for i in range(len(data)):
+        if bits_count == 0:
+            bits_count = get_leading_set_bits(data[i])
+            '''1-byte (format: 0xxxxxxx)'''
+            if bits_count == 0:
+                continue
+            '''a character in UTF-8 can be 1 to 4 bytes long'''
+            if bits_count == 1 or bits_count > 4:
+                return False
+        else:
+            '''checks if current byte has format 10xxxxxx'''
+            if not (data[i] & (1 << 7) and not (data[i] & (1 << 6))):
+                return False
+        bits_count -= 1
+    return bits_count == 0
