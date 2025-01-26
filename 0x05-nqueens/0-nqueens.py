@@ -1,55 +1,38 @@
 #!/usr/bin/python3
-import sys
+"""
+Method to determine if given data represents valid UTF-8 encoding
+Prototype: def validUTF8(data)
+Returns True if data is valid UTF-8 encoding, else return False
+Dataset can contain multiple characters
+Data will represent a list of integers
+"""
 
-def is_safe(board, row, col, n):
-        for i in range(row):
-                    if board[i] == col or \
-                                       board[i] - i == col - row or \
-                                                  board[i] + i == col + row:
-                                                                  return False
-                                                                  return True
 
-                                                              def solve_n_queens(n, row, board, result):
-                                                                      if row == n:
-                                                                                  result.append(board[:])
-                                                                                          return
+def validUTF8(data):
+    """
+    Prototype: def validUTF8(data)
+    Returns True if data is valid UTF-8 encoding
+    else return False
+    """
+    count = 0
 
-                                                                                          for col in range(n):
-                                                                                                      if is_safe(board, row, col, n):
-                                                                                                                      board.append(col)
-                                                                                                                                  solve_n_queens(n, row + 1, board, result)
-                                                                                                                                              board.pop()
+    for bit in data:
+        binary = bin(bit).replace('0b', '').rjust(8, '0')[-8:]
+        if count == 0:
+            if binary.startswith('110'):
+                count = 1
+            if binary.startswith('1110'):
+                count = 2
+            if binary.startswith('11110'):
+                count = 3
+            if binary.startswith('10'):
+                return False
+        else:
+            if not binary.startswith('10'):
+                return False
+            count -= 1
 
-                                                                                                                                              def print_board(board, n):
-                                                                                                                                                      for row in range(n):
-                                                                                                                                                                  line = ""
-                                                                                                                                                                          for col in range(n):
-                                                                                                                                                                                          if board[row] == col:
-                                                                                                                                                                                                              line += "Q "
-                                                                                                                                                                                                                          else:
-                                                                                                                                                                                                                                              line += ". "
-                                                                                                                                                                                                                                                      print(line)
-                                                                                                                                                                                                                                                          print()
+    if count != 0:
+        return False
 
-                                                                                                                                                                                                                                                          def main():
-                                                                                                                                                                                                                                                                  if len(sys.argv) != 2:
-                                                                                                                                                                                                                                                                              print("Usage: nqueens N")
-                                                                                                                                                                                                                                                                                      sys.exit(1)
-
-                                                                                                                                                                                                                                                                                          try:
-                                                                                                                                                                                                                                                                                                      n = int(sys.argv[1])
-                                                                                                                                                                                                                                                                                                              if n < 4:
-                                                                                                                                                                                                                                                                                                                              print("N must be at least 4")
-                                                                                                                                                                                                                                                                                                                                          sys.exit(1)
-                                                                                                                                                                                                                                                                                                                                              except ValueError:
-                                                                                                                                                                                                                                                                                                                                                          print("N must be a number")
-                                                                                                                                                                                                                                                                                                                                                                  sys.exit(1)
-
-                                                                                                                                                                                                                                                                                                                                                                      result = []
-                                                                                                                                                                                                                                                                                                                                                                          solve_n_queens(n, 0, [], result)
-
-                                                                                                                                                                                                                                                                                                                                                                              for solution in result:
-                                                                                                                                                                                                                                                                                                                                                                                          print_board(solution, n)
-
-                                                                                                                                                                                                                                                                                                                                                                                          if __name__ == "__main__":
-                                                                                                                                                                                                                                                                                                                                                                                                  main()
+    return True
